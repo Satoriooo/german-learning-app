@@ -1,0 +1,57 @@
+<!-- activity_main.xml: Layout for the home screen -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp"
+    android:background="#f0f4f7"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wählen Sie eine Übung"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/subtitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(Choose an exercise)"
+        android:textSize="18sp"
+        android:textColor="#666"
+        android:layout_below="@id/titleTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"/>
+
+    <Button
+        android:id="@+id/writingButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Schreiben (Writing)"
+        android:layout_below="@id/subtitleTextView"
+        android:backgroundTint="#34C759"
+        android:textColor="@android:color/white"
+        android:padding="20dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/speakingButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sprechen (Speaking)"
+        android:layout_below="@id/writingButton"
+        android:backgroundTint="#FF9500"
+        android:textColor="@android:color/white"
+        android:padding="20dp"
+        android:textSize="18sp"/>
+
+</RelativeLayout>
+

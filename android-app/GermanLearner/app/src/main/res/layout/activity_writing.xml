@@ -1,0 +1,102 @@
+<!-- activity_writing.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="#f0f4f7"
+    tools:context=".WritingActivity">
+
+    <TextView
+        android:id="@+id/writingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Writing Practice"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- New TextView to display the writing prompt -->
+    <TextView
+        android:id="@+id/topicTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/writingTitle"
+        android:text="Click 'New Topic' to get a prompt..."
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:textColor="#555"
+        android:padding="12dp"
+        android:background="@drawable/topic_background"
+        android:layout_marginBottom="15dp" />
+
+    <!-- You will need to create a new drawable file named topic_background.xml in the res/drawable folder -->
+    <!-- with a shape definition for a rounded rectangle with a light background -->
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_below="@id/topicTextView"
+        android:hint="Schreiben Sie hier Ihren Text..."
+        android:gravity="top"
+        android:background="@android:color/white"
+        android:padding="15dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="20dp"
+        android:inputType="textMultiLine"/>
+
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/editText">
+
+        <Button
+            android:id="@+id/newTopicButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="New Topic"
+            android:backgroundTint="#FF9500"
+            android:textColor="@android:color/white"
+            android:padding="15dp"
+            android:layout_marginEnd="10dp"/>
+
+        <Button
+            android:id="@+id/getFeedbackButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Get Feedback"
+            android:backgroundTint="#007AFF"
+            android:textColor="@android:color/white"
+            android:padding="15dp"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonLayout"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:id="@+id/feedbackTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e3f2fd"
+            android:padding="15dp"
+            android:textSize="16sp"
+            android:textColor="#1565c0"
+            android:visibility="gone"/>
+    </ScrollView>
+
+</RelativeLayout>
