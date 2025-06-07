@@ -30,7 +30,11 @@ public class WritingActivity extends AppCompatActivity {
     private TextView topicTextView; // New TextView
     private ProgressBar progressBar;
 
-    private static final String SERVER_URL = "http://10.0.0.18:5000"; // Base URL
+    // Local network
+    //private static final String SERVER_URL = "http://10.0.0.18:5000"; // Base URL
+
+    //Render URL
+    private static final String SERVER_URL = "https://german-app-backend-vjdu.onrender.com";
     private static final String FEEDBACK_ENDPOINT = "/feedback";
     private static final String TOPIC_ENDPOINT = "/topic";
 
