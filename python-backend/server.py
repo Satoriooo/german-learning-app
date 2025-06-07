@@ -4,6 +4,7 @@ import google.generativeai as genai
 import os
 import random
 import json
+import re # Import the regular expression library
 
 app = Flask(__name__)
 
@@ -37,7 +38,7 @@ WRITING_TOPICS = [
     "Was ist Ihnen in einer Freundschaft am wichtigsten?", # What is most important to you in a friendship?
     "Beschreiben Sie eine Fähigkeit, die Sie gerne erlernen würden.", # Describe a skill you would like to learn.
     "Was bedeutet Erfolg für Sie?", # What does success mean to you?
-    ]
+]
 
 # Configure API Key
 try:
@@ -70,8 +71,6 @@ def get_feedback():
     topic = request.json['topic']
     print(f"Received text for topic '{topic}': {user_text}")
 
-    # --- NEW: Enhanced B2 Evaluation Prompt ---
-    # This prompt instructs the model to return a JSON object, making it easy to parse in the app.
     prompt = f"""
     You are an expert German language tutor. Your task is to evaluate a German text submitted by a user in response to a specific topic. Your goal is to provide feedback consistent with B2 level expectations of the CEFR.
 
@@ -93,25 +92,34 @@ def get_feedback():
     try:
         response = model.generate_content(prompt)
         
-        if response and response.text:
-            # The AI's response is the JSON string
-            feedback_json_str = response.text
-            # We don't need to wrap it in another JSON object, just return it directly
-            # after ensuring it's valid.
-            try:
-                # Validate that the string is valid JSON
-                json.loads(feedback_json_str)
-                return feedback_json_str, 200, {'Content-Type': 'application/json; charset=utf-8'}
-            except json.JSONDecodeError:
-                print("Error: AI did not return valid JSON.")
-                return jsonify({'error': 'AI response was not valid JSON.'}), 500
-        else:
-            return jsonify({'error': 'Could not generate feedback from AI.'}), 500
+        if not response or not response.text:
+             return jsonify({'error': 'AI returned an empty response.'}), 500
+
+        raw_text = response.text
+        print(f"Raw AI Response: {raw_text}") # Log the full response for debugging
+
+        # --- MODIFICATION START: Robust JSON Extraction ---
+        # Find the JSON object within the text, even if it's wrapped in markdown or other text.
+        match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+        if not match:
+            print("Error: No JSON object found in AI response.")
+            return jsonify({'error': 'No JSON object found in AI response.'}), 500
+
+        json_str = match.group(0)
+        # --- MODIFICATION END ---
+        
+        try:
+            # Validate that the extracted string is valid JSON
+            feedback_data = json.loads(json_str)
+            return jsonify(feedback_data)
+        except json.JSONDecodeError:
+            print(f"Error: AI did not return valid JSON. Extracted string: {json_str}")
+            return jsonify({'error': 'AI response was not valid JSON.'}), 500
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred during API call: {e}")
         return jsonify({'error': 'Failed to get feedback from the generative model.'}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=10000) # Render might use a different port, but this is fine for local.
 
