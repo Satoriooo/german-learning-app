@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".WritingActivity" />
+        <activity android:name=".HistoryActivity" />
         <!-- Declare SpeakingActivity here when you create it -->
         <!-- <activity android:name=".SpeakingActivity" /> -->
     </application>

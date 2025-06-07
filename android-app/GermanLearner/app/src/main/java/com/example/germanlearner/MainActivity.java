@@ -1,21 +1,11 @@
 // MainActivity.java
+// Updated to handle the new history button.
 package com.example.germanlearner;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.telecom.Call;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,22 +16,20 @@ public class MainActivity extends AppCompatActivity {
 
         Button writingButton = findViewById(R.id.writingButton);
         Button speakingButton = findViewById(R.id.speakingButton);
+        Button historyButton = findViewById(R.id.historyButton);
 
-        writingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WritingActivity.class);
-                startActivity(intent);
-            }
+        writingButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WritingActivity.class);
+            startActivity(intent);
         });
 
-        speakingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Intent for SpeakingActivity will go here
-                // Intent intent = new Intent(MainActivity.this, SpeakingActivity.class);
-                // startActivity(intent);
-            }
+        speakingButton.setOnClickListener(v -> {
+            // SpeakingActivity intent would go here in the future
+        });
+
+        historyButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(intent);
         });
     }
 }
