@@ -28,9 +28,8 @@ except KeyError:
     exit()
 
 # Configure the generative model
-model = genai.GenerativeModel('gemini-1.5-flash') # Updated to a newer model for potentially better results
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# Endpoint to get a random topic
 @app.route('/topic', methods=['GET'])
 def get_topic():
     """Returns a random writing topic."""
@@ -41,8 +40,8 @@ def get_topic():
 @app.route('/feedback', methods=['POST'])
 def get_feedback():
     """
-    Receives text and a topic, gets a detailed B2-level evaluation,
-    and returns it as a structured JSON object.
+    Receives text, evaluates it, and returns a structured JSON object
+    including a list of vocabulary words from the corrections.
     """
     if not request.json or 'text' not in request.json or 'topic' not in request.json:
         return jsonify({'error': 'Invalid request. "text" and "topic" fields are required.'}), 400
@@ -51,39 +50,35 @@ def get_feedback():
     topic = request.json['topic']
     print(f"Received text for topic '{topic}': {user_text}")
 
-    # --- NEW: Pre-evaluation Check in Python ---
     word_count = len(user_text.split())
     if word_count < 50:
         print(f"Text is too short ({word_count} words). Returning immediate feedback.")
+        # Return an empty vocabulary list for short texts
         return jsonify({
-            "score": random.randint(0, 15), # Give a very low random score
-            "evaluation": "Der Text ist mit unter 50 Wörtern viel zu kurz für eine sinnvolle Bewertung. Versuchen Sie, ausführlicher zu schreiben.",
-            "corrected_text": user_text, # Return the original text as there's not enough to correct
-            "explanation": "Der Text ist zu kurz. Bitte schreiben Sie mindestens 50 Wörter, um eine Bewertung nach dem B2-Niveau zu erhalten."
+            "score": random.randint(0, 15),
+            "evaluation": "Der Text ist mit unter 50 Wörtern viel zu kurz für eine sinnvolle Bewertung.",
+            "corrected_text": user_text,
+            "explanation": "Bitte schreiben Sie mindestens 50 Wörter, um eine Bewertung zu erhalten.",
+            "vocabulary_list": []
         })
-    # --- END of new check ---
 
-    # --- UPDATED PROMPT ---
+    # --- NEW, IMPROVED PROMPT ---
     prompt = f"""
-    You are a very strict German language professor evaluating a student's writing for the B2 CEFR level. Your feedback must be critical, precise, and adhere to a high standard.
+    You are a very strict German language professor evaluating a student's writing for the B2 CEFR level.
 
-    **Core Instructions:**
+    **Analysis Steps:**
 
-    1.  **Analyze the Text:** Scrutinize the text for relevance to the topic, logical structure, grammar, vocabulary, and style. Be particularly harsh on mistakes that a B2 learner should not be making (e.g., basic word order, common noun genders, verb conjugations).
-    2.  **Generate a Score (0-100):**
-        * **90-100:** Nearly flawless, native-like. (Extremely rare)
-        * **75-89:** Excellent work, but with minor, infrequent errors.
-        * **60-74:** Good, but with several noticeable errors in grammar or vocabulary.
-        * **50-59:** Barely passes. Contains significant errors that hinder communication.
-        * **0-49:** Fails the B2 standard. Poor grammar, limited vocabulary, or off-topic.
-    3.  **Correct the Text:** Provide a fully corrected version. In this corrected version, wrap every single change (added, removed, or modified words) in `<c>...</c>` tags. For example, correcting "Ich habe zu die Park gegangen" to "Ich bin in den Park gegangen" must be formatted as "<c>Ich bin in den</c> Park <c>gegangen</c>". Do not bold the text.
-    4.  **Explain Mistakes:** In simple German, explain the top 2-3 most critical mistakes. Focus on patterns of errors.
-    5.  **Format Output:** Return your entire response as a single, minified JSON object with no extra text or line breaks before or after it. The JSON object must have these four keys and only these four: "score", "evaluation", "corrected_text", "explanation".
+    1.  **Correct the Text:** Provide a corrected version. Wrap every single changed or added word in `<c>...</c>` tags. Example: "Ich bin <c>in den</c> Park gegangen."
+    2.  **Extract Vocabulary:** From your corrections, identify the **single nouns, verbs, adjectives, or adverbs** that were corrected. Do NOT include pronouns, articles, or prepositions. Create a JSON list of these words. For example, if you corrected "große Haus" to "<c>großes</c> Haus", you should extract "großes". If you corrected "Ich habe...gegeht" to "<c>bin</c>...<c>gegangen</c>", you should extract "gegangen".
+    3.  **Generate Score (0-100):** Based on the number and severity of errors.
+    4.  **Write Evaluation & Explanation:** Briefly evaluate the text and explain the most critical mistake in simple German.
+    5.  **Translate & Create Sentences:** For each word in your vocabulary list, provide a simple English translation, an English example sentence, and a German example sentence.
+    6.  **Format Final Output:** Return your entire response as a single, minified JSON object. It MUST contain these exact keys: "score", "evaluation", "corrected_text", "explanation", and "vocabulary_list". The "vocabulary_list" key must contain an array of objects, where each object has these keys: "german_word", "english_translation", "german_sentence", "english_sentence".
 
     **User's Topic:** {topic}
     **User's Text:** {user_text}
     """
-    # --- END of updated prompt ---
+    # --- END OF PROMPT ---
 
     try:
         response = model.generate_content(prompt)
@@ -94,17 +89,18 @@ def get_feedback():
         raw_text = response.text
         print(f"Raw AI Response: {raw_text}")
 
-        # The AI should now be better at returning only JSON, but we'll keep the regex as a safeguard
         match = re.search(r'\{.*\}', raw_text, re.DOTALL)
         if not match:
             print("Error: No JSON object found in AI response.")
-            # Fallback: Try to wrap the response in a JSON structure if it's just a string
             return jsonify({'error': 'AI response did not contain a JSON object.'}), 500
 
         json_str = match.group(0)
         
         try:
             feedback_data = json.loads(json_str)
+            # Ensure the vocabulary list key exists, even if it's empty
+            if 'vocabulary_list' not in feedback_data:
+                feedback_data['vocabulary_list'] = []
             return jsonify(feedback_data)
         except json.JSONDecodeError:
             print(f"Error: AI did not return valid JSON. Extracted string: {json_str}")
