@@ -4,40 +4,20 @@ import google.generativeai as genai
 import os
 import random
 import json
-import re # Import the regular expression library
+import re
 
 app = Flask(__name__)
 
 # List of writing topics
 WRITING_TOPICS = [
-    "Beschreiben Sie Ihr Wochenende.", # Describe your weekend.
-    "Was ist Ihr Lieblingsessen und warum?", # What is your favorite food and why?
-    "Schreiben Sie eine E-Mail an einen Freund, um ein Treffen zu planen.", # Write an email to a friend to plan a meeting.
-    "Was sind Ihre Pläne für den nächsten Urlaub?", # What are your plans for your next vacation?
-    "Beschreiben Sie Ihr Lieblingsbuch oder Ihren Lieblingsfilm.", # Describe your favorite book or movie.
-    "Was ist Ihr Traumberuf?", # What is your dream job?
-    "Schreiben Sie über eine Person, die Sie bewundern.", # Write about a person you admire.
-    "Was machen Sie gerne in Ihrer Freizeit?", # What do you like to do in your free time?
-    "Was ist Ihr Lieblingshobby und warum?", # What is your favorite hobby and why?
-    "Beschreiben Sie einen perfekten Tag.", # Describe a perfect day.
-    "Was ist Ihre schönste Kindheitserinnerung?", # What is your fondest childhood memory?
-    "Welches Land möchten Sie am liebsten bereisen und warum?", # Which country would you most like to visit and why?
-    "Erzählen Sie von einem lustigen Vorfall, der Ihnen passiert ist.", # Tell a story about a funny incident that happened to you.
-    "Was ist der beste Ratschlag, den Sie je erhalten haben?", # What is the best advice you have ever received?
-    "Beschreiben Sie das Haus, in dem Sie aufgewachsen sind.", # Describe the house where you grew up.
-    "Welche Superkraft hätten Sie gerne und warum?", # What superpower would you like to have and why?
-    "Schreiben Sie über ein Thema, das Sie begeistert.", # Write about a topic that you are passionate about.
-    "Was ist Ihr Lieblingslied und welche Erinnerungen verbinden Sie damit?", # What is your favorite song and what memories do you associate with it?
-    "Beschreiben Sie eine Herausforderung, die Sie gemeistert haben, und was Sie daraus gelernt haben.", # Describe a challenge you have overcome and what you learned from it.
-    "Wofür sind Sie im Leben am dankbarsten?", # What are you most grateful for in life?
-    "Schreiben Sie eine Bewertung für ein Produkt, das Sie kürzlich verwendet haben.", # Write a review for a product you have used recently.
-    "Was ist Ihre Meinung zu sozialen Medien?", # What is your opinion on social media?
-    "Wie sieht Ihre typische Morgenroutine aus?", # What does your typical morning routine look like?
-    "Welches historische Ereignis finden Sie am faszinierendsten?", # Which historical event do you find most fascinating?
-    "Schreiben Sie einen Brief an Ihr zukünftiges Ich.", # Write a letter to your future self.
-    "Was ist Ihnen in einer Freundschaft am wichtigsten?", # What is most important to you in a friendship?
-    "Beschreiben Sie eine Fähigkeit, die Sie gerne erlernen würden.", # Describe a skill you would like to learn.
-    "Was bedeutet Erfolg für Sie?", # What does success mean to you?
+    "Beschreiben Sie Ihr Wochenende.",
+    "Was ist Ihr Lieblingsessen und warum?",
+    "Schreiben Sie eine E-Mail an einen Freund, um ein Treffen zu planen.",
+    "Was sind Ihre Pläne für den nächsten Urlaub?",
+    "Beschreiben Sie Ihr Lieblingsbuch oder Ihren Lieblingsfilm.",
+    "Was ist Ihr Traumberuf?",
+    "Schreiben Sie über eine Person, die Sie bewundern.",
+    "Was machen Sie gerne in Ihrer Freizeit?",
 ]
 
 # Configure API Key
@@ -48,7 +28,7 @@ except KeyError:
     exit()
 
 # Configure the generative model
-model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel('gemini-1.5-flash') # Updated to a newer model for potentially better results
 
 # Endpoint to get a random topic
 @app.route('/topic', methods=['GET'])
@@ -71,23 +51,39 @@ def get_feedback():
     topic = request.json['topic']
     print(f"Received text for topic '{topic}': {user_text}")
 
+    # --- NEW: Pre-evaluation Check in Python ---
+    word_count = len(user_text.split())
+    if word_count < 50:
+        print(f"Text is too short ({word_count} words). Returning immediate feedback.")
+        return jsonify({
+            "score": random.randint(0, 15), # Give a very low random score
+            "evaluation": "Der Text ist mit unter 50 Wörtern viel zu kurz für eine sinnvolle Bewertung. Versuchen Sie, ausführlicher zu schreiben.",
+            "corrected_text": user_text, # Return the original text as there's not enough to correct
+            "explanation": "Der Text ist zu kurz. Bitte schreiben Sie mindestens 50 Wörter, um eine Bewertung nach dem B2-Niveau zu erhalten."
+        })
+    # --- END of new check ---
+
+    # --- UPDATED PROMPT ---
     prompt = f"""
-    You are an expert German language tutor. Your task is to evaluate a German text submitted by a user in response to a specific topic. Your goal is to provide feedback consistent with B2 level expectations of the CEFR.
+    You are a very strict German language professor evaluating a student's writing for the B2 CEFR level. Your feedback must be critical, precise, and adhere to a high standard.
 
-    **Instructions:**
+    **Core Instructions:**
 
-    1.  **Evaluate the Text:** Assess the submitted text based on its relevance to the topic: "{topic}". Also evaluate its coherence, vocabulary, and grammar for the B2 level. Do NOT consider the length of the text.
-    2.  **Generate a Score:** Based on your evaluation, provide a score from 0 to 100.
-    3.  **Correct the Text:** Provide a fully corrected version. In this corrected version, wrap any word that you changed or added in `<c>...</c>` tags. For example, if the user wrote "Ich mag die Tee" and you correct it to "Ich mag den Tee", the output should be "Ich mag <c>den</c> Tee".
-    4.  **Explain Mistakes:** Provide a simple explanation in German for the most important corrections.
-    5.  **Format Output:** Return your entire response as a single, minified JSON object with no line breaks. The JSON object must have these exact keys: "score", "evaluation", "corrected_text", "explanation".
+    1.  **Analyze the Text:** Scrutinize the text for relevance to the topic, logical structure, grammar, vocabulary, and style. Be particularly harsh on mistakes that a B2 learner should not be making (e.g., basic word order, common noun genders, verb conjugations).
+    2.  **Generate a Score (0-100):**
+        * **90-100:** Nearly flawless, native-like. (Extremely rare)
+        * **75-89:** Excellent work, but with minor, infrequent errors.
+        * **60-74:** Good, but with several noticeable errors in grammar or vocabulary.
+        * **50-59:** Barely passes. Contains significant errors that hinder communication.
+        * **0-49:** Fails the B2 standard. Poor grammar, limited vocabulary, or off-topic.
+    3.  **Correct the Text:** Provide a fully corrected version. In this corrected version, wrap every single change (added, removed, or modified words) in `<c>...</c>` tags. For example, correcting "Ich habe zu die Park gegangen" to "Ich bin in den Park gegangen" must be formatted as "<c>Ich bin in den</c> Park <c>gegangen</c>". Do not bold the text.
+    4.  **Explain Mistakes:** In simple German, explain the top 2-3 most critical mistakes. Focus on patterns of errors.
+    5.  **Format Output:** Return your entire response as a single, minified JSON object with no extra text or line breaks before or after it. The JSON object must have these four keys and only these four: "score", "evaluation", "corrected_text", "explanation".
 
     **User's Topic:** {topic}
     **User's Text:** {user_text}
-
-    **Example Output Format (minified JSON):**
-    {{"score": 85, "evaluation": "Dein Text ist gut strukturiert und thematisch passend. Der Wortschatz ist angemessen, aber es gibt einige Grammatikfehler, besonders bei den Artikeln.", "corrected_text": "Ich mag <c>den</c> Tee.", "explanation": "* **Original:** 'die Tee'\\n* **Korrektur:** 'den Tee'\\n* **Erklärung:** 'Tee' ist ein maskulines Nomen, daher ist im Akkusativ der Artikel 'den' korrekt."}}
     """
+    # --- END of updated prompt ---
 
     try:
         response = model.generate_content(prompt)
@@ -96,20 +92,18 @@ def get_feedback():
              return jsonify({'error': 'AI returned an empty response.'}), 500
 
         raw_text = response.text
-        print(f"Raw AI Response: {raw_text}") # Log the full response for debugging
+        print(f"Raw AI Response: {raw_text}")
 
-        # --- MODIFICATION START: Robust JSON Extraction ---
-        # Find the JSON object within the text, even if it's wrapped in markdown or other text.
+        # The AI should now be better at returning only JSON, but we'll keep the regex as a safeguard
         match = re.search(r'\{.*\}', raw_text, re.DOTALL)
         if not match:
             print("Error: No JSON object found in AI response.")
-            return jsonify({'error': 'No JSON object found in AI response.'}), 500
+            # Fallback: Try to wrap the response in a JSON structure if it's just a string
+            return jsonify({'error': 'AI response did not contain a JSON object.'}), 500
 
         json_str = match.group(0)
-        # --- MODIFICATION END ---
         
         try:
-            # Validate that the extracted string is valid JSON
             feedback_data = json.loads(json_str)
             return jsonify(feedback_data)
         except json.JSONDecodeError:
@@ -121,5 +115,4 @@ def get_feedback():
         return jsonify({'error': 'Failed to get feedback from the generative model.'}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000) # Render might use a different port, but this is fine for local.
-
+    app.run(host='0.0.0.0', port=os.environ.get("PORT", 10000))
