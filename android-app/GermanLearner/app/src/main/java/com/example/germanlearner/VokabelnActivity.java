@@ -1,24 +1,28 @@
 package com.example.germanlearner;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 public class VokabelnActivity extends AppCompatActivity {
+
+    private RecyclerView vocabularyRecyclerView;
+    // We will set up the adapter in a later step
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        // Set the content view to our new layout file
         setContentView(R.layout.activity_vokabeln);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        // Find the RecyclerView from the layout
+        vocabularyRecyclerView = findViewById(R.id.vocabulary_recycler_view);
+
+        // Set its layout manager
+        vocabularyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // In the next steps, we will create the adapter and set it here, like:
+        // vocabularyRecyclerView.setAdapter(your_adapter);
     }
 }

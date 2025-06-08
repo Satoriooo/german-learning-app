@@ -15,23 +15,22 @@
         android:theme="@style/Theme.GermanLearner"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".VokabelnActivity"
+            android:exported="false" />
         <!-- This is your main launcher screen -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- These are your other screens -->
+        </activity> <!-- These are your other screens -->
         <activity android:name=".WritingActivity" />
-        <activity android:name=".HistoryActivity" />
-
-        <!-- THIS IS THE NEW LINE THAT FIXES THE CRASH -->
+        <activity android:name=".HistoryActivity" /> <!-- THIS IS THE NEW LINE THAT FIXES THE CRASH -->
         <activity android:name=".RecordDetailActivity" />
-
     </application>
+
 </manifest>

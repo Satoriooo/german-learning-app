@@ -15,16 +15,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button writingButton = findViewById(R.id.writingButton);
-        Button speakingButton = findViewById(R.id.speakingButton);
         Button historyButton = findViewById(R.id.historyButton);
+        Button vokabelnButton = findViewById(R.id.vokabeln_button);
+        vokabelnButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, VokabelnActivity.class);
+            startActivity(intent);
+        });
 
         writingButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, WritingActivity.class);
             startActivity(intent);
-        });
-
-        speakingButton.setOnClickListener(v -> {
-            // SpeakingActivity intent would go here in the future
         });
 
         historyButton.setOnClickListener(v -> {
