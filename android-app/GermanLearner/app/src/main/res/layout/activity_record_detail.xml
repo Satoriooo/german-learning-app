@@ -1,6 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<!-- activity_record_detail.xml -->
+<!-- THIS IS A BRAND NEW LAYOUT FILE -->
+<!-- Create this new layout file in res/layout. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score"
+            android:textAppearance="?attr/textAppearanceHeadline5"/>
+
+        <TextView
+            android:id="@+id/detailScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="85"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorPrimary"/>
+
+        <TextView
+            style="@style/DetailHeader"
+            android:text="Topic" />
+        <TextView
+            android:id="@+id/detailTopic"
+            style="@style/DetailContent" />
+
+        <TextView
+            style="@style/DetailHeader"
+            android:text="Your Text" />
+        <TextView
+            android:id="@+id/detailOriginal"
+            style="@style/DetailContent" />
+
+        <TextView
+            style="@style/DetailHeader"
+            android:text="Corrected Text" />
+        <TextView
+            android:id="@+id/detailCorrected"
+            style="@style/DetailContent" />
+
+        <TextView
+            style="@style/DetailHeader"
+            android:text="Evaluation" />
+        <TextView
+            android:id="@+id/detailEvaluation"
+            style="@style/DetailContent" />
+
+        <TextView
+            style="@style/DetailHeader"
+            android:text="Explanation" />
+        <TextView
+            android:id="@+id/detailExplanation"
+            style="@style/DetailContent"
+            android:layout_marginBottom="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

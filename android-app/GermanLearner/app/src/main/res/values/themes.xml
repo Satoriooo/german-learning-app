@@ -6,4 +6,23 @@
     </style>
 
     <style name="Theme.GermanLearner" parent="Base.Theme.GermanLearner" />
+
+    <style name="DetailHeader" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="DetailContent" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:background">@drawable/detail_content_background</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+
 </resources>

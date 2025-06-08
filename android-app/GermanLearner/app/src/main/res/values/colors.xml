@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Define specific colors for your LIGHT theme -->
+    <color name="textColorPrimary">#FF000000</color> <!-- Black -->
+    <color name="textColorSecondary">#757575</color> <!-- Gray -->
+    <color name="windowBackground">#FFFDFDFD</color> <!-- Off-white -->
 </resources>

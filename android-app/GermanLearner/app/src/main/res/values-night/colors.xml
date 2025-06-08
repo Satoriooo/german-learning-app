@@ -1,9 +1,7 @@
-<!-- Update your theme to inherit from DayNight -->
-<!-- colors.xml (create this in a new res/values-night folder for dark mode) -->
+<!-- res/values-night/colors.xml (Your DARK theme colors) -->
 <resources>
-    <!-- Define your dark theme colors here. You can customize these. -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <!-- Example primary color for dark theme -->
-    <color name="my_dark_primary">#FF6200EE</color>
+    <!-- Define specific colors for your DARK theme -->
+    <color name="textColorPrimary">#FFFFFFFF</color> <!-- White -->
+    <color name="textColorSecondary">#BDBDBD</color> <!-- Light Gray -->
+    <color name="windowBackground">#FF121212</color> <!-- Near Black -->
 </resources>

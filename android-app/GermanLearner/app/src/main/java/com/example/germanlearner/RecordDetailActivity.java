@@ -45,7 +45,7 @@ public class RecordDetailActivity extends AppCompatActivity {
             correctedText.setText(Html.fromHtml(formatCorrectedText(corrected), Html.FROM_HTML_MODE_COMPACT));
 
             evaluation.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVALUATION)));
-            explanation.setText(cursor.getString(cursor.getColumnIndexOrThrow(Database_Helper.COLUMN_EXPLANATION)).replace("\\n", "\n"));
+            explanation.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EXPLANATION)).replace("\\n", "\n"));
             score.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SCORE))));
 
             cursor.close();
